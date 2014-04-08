@@ -1,0 +1,321 @@
+FORMAT: X-1A
+
+HOST: https://data.met.no
+
+# MetData API Documentation
+
+MetData API is a *data retrieval* service for retrieving meteorological and oceanographic data at MET. An access token is 
+equired to use the API.  In order to request a token, you must first request a token from the *token request page*.
+
+The following documentation covers the core resources that are available at MET Norway. First of all, read basic instructions
+o start using the API.
+
+## Allowed HTTPs requests:
+
+- `POST` - To create or update resource
+- `PUT` - To create or update resource
+- `GET` - Get a resource or list of resources
+- `DELETE` - To delete resource
+
+## Description Of Usual Server Responses
+
+- 200 `OK` - the request was successful (some API calls may return 201 instead).
+- 201 `Created` - the request was successful and a resource was created.
+- 400 `Bad Request` - the request could not be understood or was missing required parameters.
+- 401 `Unauthorized` - authentication failed or user doesn't have permissions for requested operation.
+- 403 `Forbidden` - access denied.
+- 404 `Not Found` - resource was not found.
+- 503 `Service Unavailable` - service is temporary unavailable (e.g. scheduled Platform Maintenance). Try again later.
+
+In case of errors, the server will also return a plain-text message containing human readable information.
+
+
+# MetData API Root [/]
+MetData API entry point.
+
+This resource does not have any attributes. Instead it offers the initial API affordances in the form of the HTTP Link header 
+nd HAL links.
+
+In the real MetData API, the root should serve up HTML pages for the front of the API, providing links to documentation, 
+xamples, and licensing, etc.
+
+## Retrieve Entry Point [GET]
+
++ Response 200 (application/hal+json)
+    + Headers
+
+            Link: <http:/data.met.no>;rel="self",<http:/data.met.no/observations>;rel="observations"
+
+    + Body
+
+            {
+                "_links": {
+                    "self": { "href": "/" },
+                    "observations": { "href": "/observations?{?dataproviders,locations,level,referenceTime,validTime,valueParameters,dataVersions,functions,fields,limit,offset,namespace}", "templated": true }
+                }
+            }
+
+# Group Observations
+
+Observations are one of the key resources in the MetData API. The observations resource can be used to retrieve a wide variety
+of data about observations, both individual data measurements as well as time-series.
+
+## /observations.json{?dataproviders,locations,level,referencetime,validtime,valueparameters,dataversions,functions,fields,limit,offset,namespace}
+### Retrieve Observations [GET]
++ Response 200 (application/json)
+
+        [
+            {
+                "dataprovider": "KS18700",
+                "place": "POINT(55.4 12.3 2)",
+                "levelparameter": "altitude",
+                "validtime": "2012-03-01T00:00:00Z",
+                "data": [
+                    {
+                        "referencetime": "2012-03-01T00:00:00Z",
+                        "valueparameter": "air_temperature",
+                        "value": 0.9,
+                        "quality": 2,
+                        "dataversion": 2
+                    },
+                    {
+                        "referencetime": "2012-03-02T00:00:00Z",
+                        "valueparameter": "air_temperature",
+                        "value": 1.1,
+                        "quality": 2,
+                        "dataversion": 3
+                    },
+                    {
+                        "referencetime": "2012-03-03T00:00:00Z",
+                        "valueparameter": "air_temperature",
+                        "value": 4.5,
+                        "quality": 1,
+                        "dataversion": 1
+                    }
+                ]
+            }
+        ]
+            
+
+
++ Parameters
+
+    + dataproviders (list, optional) ... A list of dataprovider IDs that the result should be limited to. If no data providers are specified, all dataProviders are returned.
+    + locations (list, optional) ... A list of locations. WKT ISO-13249-3:2011. Alternatively, EWKT could be used instead.
+    + level (string, optional) ... The level of the query. No known standard. Alternatively, include level as a z value in the WKT, and add level designation as an extension of EWKT.
+    + referencetime (time, optional) ... The referencetime of data required. ISO-8601.
+    + validtime (time, optional) ... The validtime of data required. ISO-8601.
+    + valueparameters (list, optional) ... The value parameters of the data required.
+    + dataversions (code, optional) ... The version of the data value (not the same as EPS dataVersion).
+    + functions (list, optional) ... Functions to be run over the result, including on-the-fly aggregateion, etc.
+    + fields (list, optional) ... Limit the data returned in the return format to only these variables or fields.
+    + limit (integer, optional) ... Limit the number of answers. Default (and maximum) depends on user.
+    + offset (integer, optional) ... Returns from this offset in the result set. Need to consider how this is implemented in real-time, distributed data set.
+    + namespace (code, optional) ... Sets the namespace used in the query and the return set.
+
+## Manipulate Observations [/observations.json]
+
+### Create observation record [POST]
+
+Returns an error if the observation already exists.
+
++ Request (application/json)
+
+        { "dataprovider": "BLINDERN", "": "" }
+
++ Response 201 (application/json)
+
+        { "dataprovider": "BLINDERN", "": "" }
+
+### Update observation record [PUT]
+
+Returns an error if the observation does not exist from before. Returns an error if the dataVersion submitted does not match with the dataVersion in the data storage (i.e., someone has updated the record since your last retrieval).
+
++ Request (application/json)
+
+        { "dataprovider": "BLINDERN", "": "" }
+
++ Response 201 (application/json)
+
+        { "dataprovider": "BLINDERN", "": "" }
+
+### Update observation record [DELETE]
+
+Either does nothing, or alternatively marks data as being invisible to all users.
+
++ Request (application/json)
+
+        { "dataprovider": "BLINDERN", "": "" }
+
++ Response 404
+
+# Group Meta Data
+
+## Search Data Providers [/dataproviders.json{?dataproviders,validtime,fields,limit,offset,namespace}]
+
+### List Data Providers [GET]
+
++ Response 200
+
++ Parameters
+    + dataproviders (list, optional) ... A list of dataprovider IDs that the result should be limited to. If no data providers are specified, all dataProviders are returned.
+    + validtime (list, optional) ... The validtime of data required. ISO-8601.
+    + fields (list, optional) ... Limit the data returned in the return format to only these variables or fields.
+    + limit (integer, optional) ... Limit the number of answers. Default (and maximum) depends on user.
+    + offset (integer, optional) ... Returns from this offset in the result set. Need to consider how this is implemented in real-time, distributed data set.
+    + namespace (code, optional) ... Sets the namespace used in the query and the return set.
+
+
+
+## Edit Data Providers [/dataproviders.json]
+
+### Create observation record [POST]
+
+Returns an error if the data provider already exists.
+
++ Request (application/json)
+
+        { "dataProvider": "BLINDERN", "", ..., "" }
+
++ Response 201 (application/json)
+
+        { "id": 3, "title": "Buy cheese and bread for breakfast." }
+
+### Update observation record [PUT]
+
+Returns an error if the data provider does not exist from before.
+
++ Request (application/json)
+
+        { "dataProvider": "BLINDERN", "", ..., "" }
+
++ Response 201 (application/json)
+
+        { "id": 3, "title": "Buy cheese and bread for breakfast." }
+
+### Update observation record [DELETE]
+
+Makes a data provider invalid (doesn't delete them).
+
++ Request (application/json)
+
+        { "dataProvider": "BLINDERN", "", ..., "" }
+
++ Response 201
+
+
+
+## Search Locations [/locations.json{?locations,validTime,fields,limit,offset,namespace}]
+
+### List Data Providers [GET]
+
++ Response 200
+
++ Parameters
+    + locations (list, optional) ... A list of dataprovider IDs that the result should be limited to. If no data providers are specified, all dataProviders are returned.
+    + validTime (list, optional) ... The validtime of data required. ISO-8601.
+    + fields (list, optional) ... Limit the data returned in the return format to only these variables or fields.
+    + limit (integer, optional) ... Limit the number of answers. Default (and maximum) depends on user.
+    + offset (integer, optional) ... Returns from this offset in the result set. Need to consider how this is implemented in real-time, distributed data set.
+    + namespace (code, optional) ... Sets the namespace used in the query and the return set.
+
+
+
+## Edit Locations [/locations.json{?dataProviders,functions,fields,limit,offset,namespace}]
+
+### Create observation record [POST]
+
+Returns an error if the data provider already exists.
+
++ Request (application/json)
+
+        { "dataProvider": "BLINDERN", "", ..., "" }
+
++ Response 201 (application/json)
+
+        { "id": 3, "title": "Buy cheese and bread for breakfast." }
+
+### Update observation record [PUT]
+
+Returns an error if the data provider does not exist from before.
+
++ Request (application/json)
+
+        { "dataProvider": "BLINDERN", "", ..., "" }
+
++ Response 201 (application/json)
+
+        { "id": 3, "title": "Buy cheese and bread for breakfast." }
+
+### Update observation record [DELETE]
+
+Makes a data provider invalid (doesn't delete them).
+
++ Request (application/json)
+
+        { "dataProvider": "BLINDERN", "", ..., "" }
+
++ Response 404
+
+
+
+## Search Parameters [/parameters.json{?parameters,validTime,fields,limit,offset,namespace}]
+
+### List Parameters [GET]
+
++ Response 200
+
++ Parameters
+    + parameters (list, optional) ... A list of dataprovider IDs that the result should be limited to. If no data providers are specified, all dataProviders are returned.
+    + validTime (list, optional) ... The validtime of data required. ISO-8601.
+    + fields (list, optional) ... Limit the data returned in the return format to only these variables or fields.
+    + limit (integer, optional) ... Limit the number of answers. Default (and maximum) depends on user.
+    + offset (integer, optional) ... Returns from this offset in the result set. Need to consider how this is implemented in real-time, distributed data set.
+    + namespace (code, optional) ... Sets the namespace used in the query and the return set.
+
+
+
+## Edit Parameters [/parameters.json]
+
+### Create parameter [POST]
+
+Allows the creation of new parameters in the metadata system.
+
++ Request (application/json)
+
+        { "dataProvider": "BLINDERN", "", ..., "" }
+
++ Response 201 (application/json)
+
+        { "id": 3, "title": "Buy cheese and bread for breakfast." }
+
+### Update parameter [PUT]
+
+Returns an error if the parameter does not exist from before. Updates a parameter. Should only rarely be used; only to handle changes in the standard or 
+
++ Request (application/json)
+
+        { "dataProvider": "BLINDERN", "", ..., "" }
+
++ Response 201 (application/json)
+
+        { "id": 3, "title": "Buy cheese and bread for breakfast." }
+
+
+
+
+## Search Functions [/locations.json{?functions,validTime,fields,limit,offset,namespace}]
+
+### List Functions [GET]
+
+Functions cannot be inserted, updated or edited.
+
++ Response 200
+
++ Parameters
+    + functions (list, optional) ... A list of dataprovider IDs that the result should be limited to. If no data providers are specified, all dataProviders are returned.
+    + validTime (list, optional) ... The validtime of data required. ISO-8601.
+    + fields (list, optional) ... Limit the data returned in the return format to only these variables or fields.
+    + limit (integer, optional) ... Limit the number of answers. Default (and maximum) depends on user.
+    + offset (integer, optional) ... Returns from this offset in the result set. Need to consider how this is implemented in real-time, distributed data set.
+    + namespace (code, optional) ... Sets the namespace used in the query and the return set.
