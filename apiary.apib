@@ -12,10 +12,10 @@ o start using the API.
 
 ## Allowed HTTPs requests:
 
-- `POST` - To create or update resource
-- `PUT` - To create or update resource
-- `GET` - Get a resource or list of resources
-- `DELETE` - To delete resource
+- `POST` - To create a resource/data
+- `PUT` - To update a resource/data
+- `GET` - Get a resource/data or list of resources/data
+- `DELETE` - To delete resource/data
 
 ## Description Of Usual Server Responses
 
@@ -51,7 +51,7 @@ xamples, and licensing, etc.
             {
                 "_links": {
                     "self": { "href": "/" },
-                    "observations": { "href": "/observations?{?dataproviders,locations,level,referenceTime,validTime,valueParameters,dataVersions,functions,fields,limit,offset,namespace}", "templated": true }
+                    "observations": { "href": "/observations?{?datasources,locations,level,referenceTime,validTime,valueParameters,dataVersions,functions,fields,limit,offset,namespace}", "templated": true }
                 }
             }
 
@@ -60,14 +60,14 @@ xamples, and licensing, etc.
 Observations are one of the key resources in the MetData API. The observations resource can be used to retrieve a wide variety
 of data about observations, both individual data measurements as well as time-series.
 
-## /observations.json{?dataproviders,locations,level,referencetime,validtime,valueparameters,dataversions,functions,fields,limit,offset,namespace}
+## /observations.json{?datasources,locations,level,referencetime,validtime,valueparameters,dataversions,functions,fields,limit,offset,namespace}
 ### Retrieve Observations [GET]
 + Response 200 (application/json)
 
         [
             {
-                "dataprovider": "KS18700",
-                "place": "POINT(55.4 12.3 2)",
+                "datasource": "KS18700",
+                "location": "POINT(55.4 12.3 2)",
                 "levelparameter": "altitude",
                 "validtime": "2012-03-01T00:00:00Z",
                 "data": [
@@ -100,7 +100,7 @@ of data about observations, both individual data measurements as well as time-se
 
 + Parameters
 
-    + dataproviders (list, optional) ... A list of dataprovider IDs that the result should be limited to. If no data providers are specified, all dataProviders are returned.
+    + datasources (list, optional) ... A list of datasource IDs that the result should be limited to. If no data sources are specified, all datasources are returned.
     + locations (list, optional) ... A list of locations. WKT ISO-13249-3:2011. Alternatively, EWKT could be used instead.
     + level (string, optional) ... The level of the query. No known standard. Alternatively, include level as a z value in the WKT, and add level designation as an extension of EWKT.
     + referencetime (time, optional) ... The referencetime of data required. ISO-8601.
