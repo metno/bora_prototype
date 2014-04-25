@@ -30,18 +30,19 @@ o start using the API.
 In case of errors, the server will also return a plain-text message containing human readable information.
 
 
-# MetData API Root [/]
+# Group API Root
+
 MetData API entry point.
 
-This resource does not have any attributes. Instead it offers the initial API affordances in the form of the HTTP Link header 
-nd HAL links.
+## /
+### GET
 
-In the real MetData API, the root should serve up HTML pages for the front of the API, providing links to documentation, 
-xamples, and licensing, etc.
+This resource does not have any attributes. Instead it offers the initial API affordances in the form of the HTTP Link header and HAL links.
 
-## Retrieve Entry Point [GET]
+In the real MetData API, the root should serve up HTML pages for the front of the API, providing links to documentation, examples, and licensing, etc.
 
 + Response 200 (application/hal+json)
+
     + Headers
 
             Link: <http:/data.met.no>;rel="self",<http:/data.met.no/observations>;rel="observations"
@@ -55,7 +56,7 @@ xamples, and licensing, etc.
                 }
             }
 
-# Group Observations
+# Group Observation
 
 Observations are one of the key resources in the MetData API. The observations resource can be used to retrieve a wide variety
 of data about observations, both individual data measurements as well as time-series.
@@ -64,6 +65,8 @@ of data about observations, both individual data measurements as well as time-se
 ### GET
 
 Retrieve observation data from the API in JSON format. Identical queries can be asked in the API using .csv or .bufr instead of .json.
+
+Querying without parameters (essentially, asking for the entire database) is not permitted and will 
 
 + Parameters
 
@@ -165,7 +168,7 @@ Returns an error if the observation does not exist from before. Returns an error
 
 ### DELETE
 
-This will always result in a 403-forbidden error.
+This will always result in a 403-forbidden error, since data is never deleted from the API in the current design.
 
 + Request (application/json)
 
@@ -181,11 +184,17 @@ This will always result in a 403-forbidden error.
 
 + Response 403
 
+
+# Group Source
+<a id="source" ></a>
+
+Source is a key entity in the MET data model. The source designates the entity which 
+
+
 # Group Meta Data
 
-## Search Data Providers [/dataproviders.json{?dataproviders,validtime,fields,limit,offset,namespace}]
-
-### List Data Providers [GET]
+## /sources.json{?dataproviders,validtime,fields,limit,offset,namespace}
+### GET
 
 + Response 200
 
@@ -351,3 +360,15 @@ Functions cannot be inserted, updated or edited.
     + limit (integer, optional) ... Limit the number of answers. Default (and maximum) depends on user.
     + offset (integer, optional) ... Returns from this offset in the result set. Need to consider how this is implemented in real-time, distributed data set.
     + namespace (code, optional) ... Sets the namespace used in the query and the return set.
+
+
+# Group Locations
+
+Observations are one of the key resources in the MetData API. The observations resource can be used to retrieve a wide variety
+of data about observations, both individual data measurements as well as time-series.
+
+
+# Group Parameters
+
+Observations are one of the key resources in the MetData API. The observations resource can be used to retrieve a wide variety
+of data about observations, both individual data measurements as well as time-series.
