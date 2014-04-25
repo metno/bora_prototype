@@ -60,13 +60,32 @@ xamples, and licensing, etc.
 Observations are one of the key resources in the MetData API. The observations resource can be used to retrieve a wide variety
 of data about observations, both individual data measurements as well as time-series.
 
-## /observations.json{?datasources,locations,level,referencetime,validtime,valueparameters,dataversions,functions,fields,limit,offset,namespace}
-### Retrieve Observations [GET]
+## /observations.json{?sources,locations,level,referencetime,validtime,valueparameters,dataversions,functions,fields,limit,offset,namespace,querytime}
+### GET
+
+Retrieve observation data from the API in JSON format. Identical queries can be asked in the API using .csv or .bufr instead of .json.
+
++ Parameters
+
+    + sources (list, optional) ... A list of data source IDs that the result should be limited to. If no data sources are specified, all datasources are returned.
+    + locations (list, optional) ... A list of locations. WKT ISO-13249-3:2011. Alternatively, EWKT could be used instead (EWKT includes spatial reference information; i.e., projections).
+    + level (string, optional) ... The level of the query. No known standard. Alternatively, include level as a z value in the WKT, and add level designation as an extension of EWKT.
+    + referencetime (time, optional) ... The referencetime of data required. ISO-8601.
+    + validtime (time, optional) ... The validtime of data required. ISO-8601.
+    + valueparameters (list, optional) ... The value parameters of the data required.
+    + dataversions (code, optional) ... The version of the data value (not the same as EPS dataVersion).
+    + functions (list, optional) ... Functions to be run over the result, including on-the-fly aggregateion, etc.
+    + fields (list, optional) ... Limit the data returned in the return format to only these variables or fields.
+    + limit (integer, optional) ... Limit the number of answers. Default (and maximum) depends on user.
+    + offset (integer, optional) ... Returns from this offset in the result set. Need to consider how this is implemented in real-time, distributed data set.
+    + namespace (code, optional) ... Sets the namespace used in the query and the return set.
+    + querytime (time, optional) ... Perform the query as if it was executed at this instant in time. Limits the answer to the data that was available at querytime.
+
 + Response 200 (application/json)
 
         [
             {
-                "datasource": "KS18700",
+                "source": "KS18700",
                 "location": "POINT(55.4 12.3 2)",
                 "levelparameter": "altitude",
                 "validtime": "2012-03-01T00:00:00Z",
@@ -95,39 +114,44 @@ of data about observations, both individual data measurements as well as time-se
                 ]
             }
         ]
-            
 
+## /observations.json
+### POST
 
-+ Parameters
+Creates a new observation record in the appropriate, underlying data storage.
 
-    + datasources (list, optional) ... A list of datasource IDs that the result should be limited to. If no data sources are specified, all datasources are returned.
-    + locations (list, optional) ... A list of locations. WKT ISO-13249-3:2011. Alternatively, EWKT could be used instead.
-    + level (string, optional) ... The level of the query. No known standard. Alternatively, include level as a z value in the WKT, and add level designation as an extension of EWKT.
-    + referencetime (time, optional) ... The referencetime of data required. ISO-8601.
-    + validtime (time, optional) ... The validtime of data required. ISO-8601.
-    + valueparameters (list, optional) ... The value parameters of the data required.
-    + dataversions (code, optional) ... The version of the data value (not the same as EPS dataVersion).
-    + functions (list, optional) ... Functions to be run over the result, including on-the-fly aggregateion, etc.
-    + fields (list, optional) ... Limit the data returned in the return format to only these variables or fields.
-    + limit (integer, optional) ... Limit the number of answers. Default (and maximum) depends on user.
-    + offset (integer, optional) ... Returns from this offset in the result set. Need to consider how this is implemented in real-time, distributed data set.
-    + namespace (code, optional) ... Sets the namespace used in the query and the return set.
+The user must have appropriate permissions for the operation to be successful, otherwise a 401-unauthorized error is returned.
 
-## Manipulate Observations [/observations.json]
-
-### Create observation record [POST]
-
-Returns an error if the observation already exists.
+If an observation record already exists for this data, then a 403-forbidden is returned.
 
 + Request (application/json)
 
-        { "dataprovider": "BLINDERN", "": "" }
+        { "source": "KS18700",
+          "location": "POINT(55.4 12.3 2)",
+          "levelparameter": "altitude",
+          "referencetime": "2012-03-01T00:00:00Z",
+          "validtime": "2012-03-01T00:00:00Z",
+          "valueparameter": "air_temperature",
+          "value": 0.9,
+          "quality": 2
+        }
 
 + Response 201 (application/json)
 
-        { "dataprovider": "BLINDERN", "": "" }
+        { "source": "KS18700",
+          "location": "POINT(55.4 12.3 2)",
+          "levelparameter": "altitude",
+          "referencetime": "2012-03-01T00:00:00Z",
+          "validtime": "2012-03-01T00:00:00Z",
+          "valueparameter": "air_temperature",
+          "value": 0.9,
+          "quality": 2,
+          "dataversion": 0
+        }
 
-### Update observation record [PUT]
+### PUT
+
+Updates an existing observation record in the relevant underlying data storages.
 
 Returns an error if the observation does not exist from before. Returns an error if the dataVersion submitted does not match with the dataVersion in the data storage (i.e., someone has updated the record since your last retrieval).
 
@@ -139,15 +163,23 @@ Returns an error if the observation does not exist from before. Returns an error
 
         { "dataprovider": "BLINDERN", "": "" }
 
-### Update observation record [DELETE]
+### DELETE
 
-Either does nothing, or alternatively marks data as being invisible to all users.
+This will always result in a 403-forbidden error.
 
 + Request (application/json)
 
-        { "dataprovider": "BLINDERN", "": "" }
+        { "source": "KS18700",
+          "location": "POINT(55.4 12.3 2)",
+          "levelparameter": "altitude",
+          "referencetime": "2012-03-01T00:00:00Z",
+          "validtime": "2012-03-01T00:00:00Z",
+          "valueparameter": "air_temperature",
+          "value": 0.9,
+          "quality": 2
+        }
 
-+ Response 404
++ Response 403
 
 # Group Meta Data
 
