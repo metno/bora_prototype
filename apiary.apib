@@ -168,11 +168,12 @@ Returns an error if the observation does not exist from before. Returns an error
 
 ### DELETE
 
-This will always result in a 403-forbidden error, since data is never deleted from the API in the current design.
+This will always result in a 403-forbidden error, since data is never deleted through the API in the current design.
 
 + Request (application/json)
 
-        { "source": "KS18700",
+        { 
+          "source": "KS18700",
           "location": "POINT(55.4 12.3 2)",
           "levelparameter": "altitude",
           "referencetime": "2012-03-01T00:00:00Z",
@@ -188,8 +189,7 @@ This will always result in a 403-forbidden error, since data is never deleted fr
 # Group Source
 <a id="source" ></a>
 
-Source is a key entity in the MET data model. The source designates the entity which 
-
+Source is a key entity in the MET data model. Source designates the known entity in the system which is closest to the creation of the data.
 
 # Group Meta Data
 
@@ -199,7 +199,7 @@ Source is a key entity in the MET data model. The source designates the entity w
 + Response 200
 
 + Parameters
-    + dataproviders (list, optional) ... A list of dataprovider IDs that the result should be limited to. If no data providers are specified, all dataProviders are returned.
+    + sources (list, optional) ... A list of source IDs that the result should be limited to. If no data providers are specified, all dataProviders are returned.
     + validtime (list, optional) ... The validtime of data required. ISO-8601.
     + fields (list, optional) ... Limit the data returned in the return format to only these variables or fields.
     + limit (integer, optional) ... Limit the number of answers. Default (and maximum) depends on user.
