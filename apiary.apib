@@ -61,6 +61,23 @@ In the real MetData API, the root should serve up HTML pages for the front of th
 Observations are one of the key resources in the MetData API. The observations resource can be used to retrieve a wide variety
 of data about observations, both individual data measurements as well as time-series.
 
+### Observation Properties  
+
+- value (float?) : Value of the observation
+- unit (string) : Unit of measure of the obervation.
+- valueparameter (string) :
+- source (string) : Source ID
+- location (string) : EWKT representation of the spatial location that the observation is valid for
+- levelfrom (float?) : Level
+- levelto (float?) : Level
+- levelParameter (string) : Parameter of the level
+- levelUnit (string) : Unit of measure for the level
+- referencetime (datetime) : 
+- validtimefrom (datetime) : 
+- validtimeto (datetime) : 
+- dataversion (integer) : 
+
+
 ## /observations.json{?sources,locations,level,referencetime,validtime,valueparameters,dataversions,functions,fields,limit,offset,namespace,querytime}
 ### GET
 
