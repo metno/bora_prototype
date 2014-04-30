@@ -206,9 +206,7 @@ This will always result in a 403-forbidden error, since data is never deleted th
 # Group Source
 <a id="source" ></a>
 
-Source is a key entity in the MET data model. Source designates the known entity in the system which is closest to the creation of the data.
-
-# Group Meta Data
+Source is a key entity in the MET data model. Source designates the known entity in the system which is closest to the creation of the data and can represent several different kinds of data such as stations, algorithms (models), etc.
 
 ## /sources.json{?dataproviders,validtime,fields,limit,offset,namespace}
 ### GET
@@ -224,10 +222,8 @@ Source is a key entity in the MET data model. Source designates the known entity
     + namespace (code, optional) ... Sets the namespace used in the query and the return set.
 
 
-
-## Edit Data Providers [/dataproviders.json]
-
-### Create observation record [POST]
+## /sources.json
+### POST
 
 Returns an error if the data provider already exists.
 
@@ -239,7 +235,7 @@ Returns an error if the data provider already exists.
 
         { "id": 3, "title": "Buy cheese and bread for breakfast." }
 
-### Update observation record [PUT]
+### PUT
 
 Returns an error if the data provider does not exist from before.
 
@@ -251,21 +247,21 @@ Returns an error if the data provider does not exist from before.
 
         { "id": 3, "title": "Buy cheese and bread for breakfast." }
 
-### Update observation record [DELETE]
+### DELETE
 
-Makes a data provider invalid (doesn't delete them).
+This will always result in a 403-forbidden error, since data is never deleted through the API in the current design.
 
-+ Request (application/json)
-
-        { "dataProvider": "BLINDERN", "", ..., "" }
-
-+ Response 201
++ Response 403
 
 
+# Group Location
+<a id="location" ></a>
 
-## Search Locations [/locations.json{?locations,validTime,fields,limit,offset,namespace}]
+Observations are one of the key resources in the MetData API. The observations resource can be used to retrieve a wide variety
+of data about observations, both individual data measurements as well as time-series.
 
-### List Data Providers [GET]
+## /locations.json{?locations,validTime,fields,limit,offset,namespace}
+### GET
 
 + Response 200
 
@@ -278,10 +274,8 @@ Makes a data provider invalid (doesn't delete them).
     + namespace (code, optional) ... Sets the namespace used in the query and the return set.
 
 
-
-## Edit Locations [/locations.json{?dataProviders,functions,fields,limit,offset,namespace}]
-
-### Create observation record [POST]
+## /locations.json
+### POST
 
 Returns an error if the data provider already exists.
 
@@ -293,7 +287,7 @@ Returns an error if the data provider already exists.
 
         { "id": 3, "title": "Buy cheese and bread for breakfast." }
 
-### Update observation record [PUT]
+### PUT
 
 Returns an error if the data provider does not exist from before.
 
@@ -305,7 +299,7 @@ Returns an error if the data provider does not exist from before.
 
         { "id": 3, "title": "Buy cheese and bread for breakfast." }
 
-### Update observation record [DELETE]
+### DELETE
 
 Makes a data provider invalid (doesn't delete them).
 
@@ -317,9 +311,14 @@ Makes a data provider invalid (doesn't delete them).
 
 
 
-## Search Parameters [/parameters.json{?parameters,validTime,fields,limit,offset,namespace}]
+# Group Parameter
+<a id="locations" ></a>
 
-### List Parameters [GET]
+Observations are one of the key resources in the MetData API. The observations resource can be used to retrieve a wide variety
+of data about observations, both individual data measurements as well as time-series.
+
+## /parameters.json{?parameters,validTime,fields,limit,offset,namespace}
+### GET
 
 + Response 200
 
@@ -332,10 +331,8 @@ Makes a data provider invalid (doesn't delete them).
     + namespace (code, optional) ... Sets the namespace used in the query and the return set.
 
 
-
-## Edit Parameters [/parameters.json]
-
-### Create parameter [POST]
+## /parameters.json
+### POST
 
 Allows the creation of new parameters in the metadata system.
 
@@ -347,7 +344,7 @@ Allows the creation of new parameters in the metadata system.
 
         { "id": 3, "title": "Buy cheese and bread for breakfast." }
 
-### Update parameter [PUT]
+### PUT
 
 Returns an error if the parameter does not exist from before. Updates a parameter. Should only rarely be used; only to handle changes in the standard or 
 
@@ -360,13 +357,24 @@ Returns an error if the parameter does not exist from before. Updates a paramete
         { "id": 3, "title": "Buy cheese and bread for breakfast." }
 
 
+### DELETE
+
+Makes a data provider invalid (doesn't delete them).
+
++ Request (application/json)
+
+        { "dataProvider": "BLINDERN", "", ..., "" }
+
++ Response 404
 
 
-## Search Functions [/locations.json{?functions,validTime,fields,limit,offset,namespace}]
-
-### List Functions [GET]
+# Group Function
+<a id="function" ></a>
 
 Functions cannot be inserted, updated or edited.
+
+## /functions.json{?functions,validTime,fields,limit,offset,namespace}
+### GET
 
 + Response 200
 
@@ -378,14 +386,3 @@ Functions cannot be inserted, updated or edited.
     + offset (integer, optional) ... Returns from this offset in the result set. Need to consider how this is implemented in real-time, distributed data set.
     + namespace (code, optional) ... Sets the namespace used in the query and the return set.
 
-
-# Group Locations
-
-Observations are one of the key resources in the MetData API. The observations resource can be used to retrieve a wide variety
-of data about observations, both individual data measurements as well as time-series.
-
-
-# Group Parameters
-
-Observations are one of the key resources in the MetData API. The observations resource can be used to retrieve a wide variety
-of data about observations, both individual data measurements as well as time-series.
