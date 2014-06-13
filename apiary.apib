@@ -5,17 +5,20 @@ HOST: https://data.met.no
 # MetData API Documentation
 
 MetData API is a *data retrieval* service for retrieving meteorological and oceanographic data at MET. An access token is 
-equired to use the API.  In order to request a token, you must first request a token from the *token request page*.
+required to use the API.  In order to receive a token, you must first request a token from the *token request page*.
 
-The following documentation covers the core resources that are available at MET Norway. First of all, read basic instructions
-o start using the API.
+The following documentation covers the core resources that are available in the MetData API. First of all, read the basic instructions
+to start using the API.
 
 ## Allowed HTTPs requests:
 
-- `POST` - To create a resource/data
-- `PUT` - To update a resource/data
-- `GET` - Get a resource/data or list of resources/data
-- `DELETE` - To delete resource/data
+- `POST` - To create a resource/data.
+- `PUT` - To update a resource/data.
+- `GET` - Get a resource/data or list of resources/data.
+- `DELETE` - To delete resource/data.
+
+The vast majority of users will only ever need to use the GET request. POST and PUT are only used if you (or your application) are a
+data provider to MET Norway, while the DELETE resource is only used by administrative functions.
 
 ## Description Of Usual Server Responses
 
@@ -27,7 +30,7 @@ o start using the API.
 - 404 `Not Found` - resource was not found.
 - 503 `Service Unavailable` - service is temporary unavailable (e.g. scheduled Platform Maintenance). Try again later.
 
-In case of errors, the server will also return a plain-text message containing human readable information.
+In case of errors, the server will also return - as part of the result-set - a human readable text message detailing the issue.
 
 
 # Group API Root
@@ -63,13 +66,13 @@ of data about observations, both individual data measurements as well as time-se
 
 ### Observation Properties  
 
-- value (float?) : Value of the observation
+- value (double) : Value of the observation
 - unit (string) : Unit of measure of the obervation.
-- valueparameter (string) :
+- valueparameter (string) : 
 - source (string) : Source ID
-- location (string) : EWKT representation of the spatial location that the observation is valid for
-- levelfrom (float?) : Level
-- levelto (float?) : Level
+- place (string) : EWKT representation of the spatial location that the observation is valid for
+- levelfrom (double) : Level
+- levelto (double) : Level
 - levelParameter (string) : Parameter of the level
 - levelUnit (string) : Unit of measure for the level
 - referencetime (datetime) : 
@@ -78,22 +81,22 @@ of data about observations, both individual data measurements as well as time-se
 - dataversion (integer) : 
 
 
-## /observations.json{?sources,locations,level,referencetime,validtime,valueparameters,dataversions,functions,fields,limit,offset,namespace,querytime}
+## /observations.json{?sources,places,level,reftime,validtime,parameters,versions,functions,fields,limit,offset,namespace,querytime}
 ### GET
 
 Retrieve observation data from the API in JSON format. Identical queries can be asked in the API using .csv or .bufr instead of .json.
 
-Querying without parameters (essentially, asking for the entire database) is not permitted and will 
+Querying without parameters (essentially, asking for the entire database) is not permitted and will result in a 400 or 403 error.
 
 + Parameters
 
     + sources (list, optional) ... A list of data source IDs that the result should be limited to. If no data sources are specified, all datasources are returned.
-    + locations (list, optional) ... A list of locations. WKT ISO-13249-3:2011. Alternatively, EWKT could be used instead (EWKT includes spatial reference information; i.e., projections).
+    + places (list, optional) ... A list of locations. WKT ISO-13249-3:2011. Alternatively, EWKT could be used instead (EWKT includes spatial reference information; i.e., projections).
     + level (string, optional) ... The level of the query. No known standard. Alternatively, include level as a z value in the WKT, and add level designation as an extension of EWKT.
-    + referencetime (time, optional) ... The referencetime of data required. ISO-8601.
+    + reftime (time, optional) ... The referencetime of data required. ISO-8601.
     + validtime (time, optional) ... The validtime of data required. ISO-8601.
-    + valueparameters (list, optional) ... The value parameters of the data required.
-    + dataversions (code, optional) ... The version of the data value (not the same as EPS dataVersion).
+    + parameters (list, optional) ... The value parameters of the data required.
+    + versions (code, optional) ... The version of the data value (not the same as EPS dataVersion).
     + functions (list, optional) ... Functions to be run over the result, including on-the-fly aggregateion, etc.
     + fields (list, optional) ... Limit the data returned in the return format to only these variables or fields.
     + limit (integer, optional) ... Limit the number of answers. Default (and maximum) depends on user.
@@ -106,16 +109,16 @@ Querying without parameters (essentially, asking for the entire database) is not
         [
             {
                 "source": "KS18700",
-                "location": "POINT(55.4 12.3 2)",
-                "levelparameter": "altitude",
+                "place": "POINT(55.4 12.3 2)",
+                "level": "altitude",
                 "validtime": "2012-03-01T00:00:00Z",
                 "data": [
                     {
-                        "referencetime": "2012-03-01T00:00:00Z",
-                        "valueparameter": "air_temperature",
+                        "reftime": "2012-03-01T00:00:00Z",
+                        "parameter": "air_temperature",
                         "value": 0.9,
                         "quality": 2,
-                        "dataversion": 2
+                        "version": 2
                     },
                     {
                         "referencetime": "2012-03-02T00:00:00Z",
@@ -138,7 +141,7 @@ Querying without parameters (essentially, asking for the entire database) is not
 ## /observations.json
 ### POST
 
-Creates a new observation record in the appropriate, underlying data storage.
+Creates one or more new observation record in the appropriate, underlying data storage.
 
 The user must have appropriate permissions for the operation to be successful, otherwise a 401-unauthorized error is returned.
 
@@ -147,11 +150,11 @@ If an observation record already exists for this data, then a 403-forbidden is r
 + Request (application/json)
 
         { "source": "KS18700",
-          "location": "POINT(55.4 12.3 2)",
-          "levelparameter": "altitude",
-          "referencetime": "2012-03-01T00:00:00Z",
+          "place": "POINT(55.4 12.3 2)",
+          "level": "altitude",
+          "reftime": "2012-03-01T00:00:00Z",
           "validtime": "2012-03-01T00:00:00Z",
-          "valueparameter": "air_temperature",
+          "parameter": "air_temperature",
           "value": 0.9,
           "quality": 2
         }
@@ -159,14 +162,14 @@ If an observation record already exists for this data, then a 403-forbidden is r
 + Response 201 (application/json)
 
         { "source": "KS18700",
-          "location": "POINT(55.4 12.3 2)",
-          "levelparameter": "altitude",
-          "referencetime": "2012-03-01T00:00:00Z",
+          "place": "POINT(55.4 12.3 2)",
+          "level": "altitude",
+          "reftime": "2012-03-01T00:00:00Z",
           "validtime": "2012-03-01T00:00:00Z",
-          "valueparameter": "air_temperature",
+          "parameter": "air_temperature",
           "value": 0.9,
           "quality": 2,
-          "dataversion": 0
+          "version": 0
         }
 
 ### PUT
@@ -177,28 +180,32 @@ Returns an error if the observation does not exist from before. Returns an error
 
 + Request (application/json)
 
-        { "dataprovider": "BLINDERN", "": "" }
+        { "source": "KS18700",
+          "place": "POINT(55.4 12.3 2)",
+          "level": "altitude",
+          "reftime": "2012-03-01T00:00:00Z",
+          "validtime": "2012-03-01T00:00:00Z",
+          "parameter": "air_temperature",
+          "value": 0.9,
+          "quality": 2
+        }
 
 + Response 201 (application/json)
 
-        { "dataprovider": "BLINDERN", "": "" }
+        { "source": "KS18700",
+          "place": "POINT(55.4 12.3 2)",
+          "level": "altitude",
+          "reftime": "2012-03-01T00:00:00Z",
+          "validtime": "2012-03-01T00:00:00Z",
+          "parameter": "air_temperature",
+          "value": 0.9,
+          "quality": 2,
+          "version": 0
+        }
 
 ### DELETE
 
 This will always result in a 403-forbidden error, since data is never deleted through the API in the current design.
-
-+ Request (application/json)
-
-        { 
-          "source": "KS18700",
-          "location": "POINT(55.4 12.3 2)",
-          "levelparameter": "altitude",
-          "referencetime": "2012-03-01T00:00:00Z",
-          "validtime": "2012-03-01T00:00:00Z",
-          "valueparameter": "air_temperature",
-          "value": 0.9,
-          "quality": 2
-        }
 
 + Response 403
 
@@ -254,13 +261,13 @@ This will always result in a 403-forbidden error, since data is never deleted th
 + Response 403
 
 
-# Group Location
-<a id="location" ></a>
+# Group Places
+<a id="places" ></a>
 
 Observations are one of the key resources in the MetData API. The observations resource can be used to retrieve a wide variety
 of data about observations, both individual data measurements as well as time-series.
 
-## /locations.json{?locations,validTime,fields,limit,offset,namespace}
+## /placess.json{?locations,validTime,fields,limit,offset,namespace}
 ### GET
 
 + Response 200
