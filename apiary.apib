@@ -87,6 +87,70 @@ Querying without parameters (essentially, asking for the entire database) is not
 One possible function could be timeseries; this would crunch the value, quality, and version information into arrays, with the grouping given by referencetime and the validtime given using interval time. Other typical functions would be on-the fly aggregations. 
 
 
+### Example
+
+The following query retrieves daily values through the API. 
+
+> https://data.met.no/observations.json?sources=18700,50540&reftime=R3/2004-08-01T00:00/2004-09-31T00:00/P1Y&lwe_thickness_of_precipitation_amount,min_air_temperature,max_air_temperature
+
+This query retrieves data from the climate stations identified by climate numbers 18700 and 50540 for august and september for three years.
+
+
+Eksempler og forklaringer på bruk av getMetData gitt forskjellige timeserietypeID:
+0 = Døgnverdier:
+getMetData("0","","2004-07-01","2006-12-31,"18700,50540","rr,tan,tax","","8,9","")
+Gir data fra august og september i den gitte perioden. I output er bare år, måned og dag aktuell i 'from'=døgnverdidatoen (tiden er satt til 0).
+
+1 =  Månedsverdier:
+getMetData("1","","2005-07-01","2006-07-01","18700,50540","rr,tan,tax","","","")
+Gir månedsverdier for alle månedene fra juli 2005 til juli 2006. I output er bare år og måned aktuell i 'from'=månedsverdidatoen (dagen er satt til 1 og tiden til 0).
+
+2 = Observasjoner (timeverdier):  
+getMetData("2","","2006-01-01","2006-02-01","18700,50540","ra,tam,tax","0,6,12,18","","")
+Gir observasjonene for timene 0,6,12 og 18 UTC i den gitte perioden. I output for tidsangivelse, betyr Z UTC-tid.
+
+3 = Månedsnormaler :  
+getMetData("3","","","","18700,50540","rr,tam","","","")
+For default normalperiode [1961-01-01->1990-12-31] kan inputparametrene 'from' og 'to' settes blanke. En annen normalperiode [1931-01-01->1960-12-31] er også tilgjengelig. I output for dato 'from' viser år=(start normalperiode) og (måned og dag)=(starten på aktuell måned). For dato 'to' viser år=(slutt normalperiode) og (måned og dag)=(slutten på aktuell måned). 
+
+4 = Døgnnormaler:  
+getMetData("4","","","","18700,50540","tam","","","")
+Inputparametrene 'from' og 'to' kan settes blanke fordi det er bare en normalperiode [1961-01-01->1990-12-31](default). Metoden gir døgnnormaler for normalperioden. I output for dato 'from' viser år=(start normalperiode) og (måned og dag)=(starten på aktuell dag). For dato 'to' viser år=(slutt normalperiode) og (måned og dag)=(slutten på aktuell dag). 
+
+5 = Døgnekstremer:  
+getMetData("5","","","","18700","rr,tax","","","") 
+Gir døgnekstremer for alle dager i året. For dato 'from' og 'to' viser år=ekstremåret og (måned og dag)=(dagen det gjelder). 
+
+7 = Homogeniserte månedsverdier:  
+getMetData("7","","2005-07-01","2006-07-01","18700","tam","","","")
+Gir homogeniset månedsverdier for alle månedene fra juli 2005 til juli 2006. 
+
+8 = Metardata: (observert fra flyplasser) 
+getMetData("8","","2008-09-01","2008-10-01","4780","ta","12","","")
+Gir metardata for timen 12 UTC i gitt periode. I output for tidsangivelse, betyr Z UTC-tid.
+
+9 = Miljødata: (observert fra plattformer) 
+getMetData("9","","2008-09-01","2008-10-01","76920","ta","12","","")
+Gir miljødata for timen 12 UTC i gitt periode. I output for tidsangivelse, betyr Z UTC-tid.
+
+10 = Ekstremer per fylke 
+getMetData("10","","","","3","tan","","","")
+Inputparameteren stations er her fylkestyper (countyID) som kan hentes fra en metode som heter getCountyTypes. I output er 'from' - datoen som sier hvilket år og dag rekorder ble satt for hver måned, 'id' - stasjonsnummer for hvor rekorder ble satt og 'type' - gir fylkestype.
+
+11 = Datadekning (månedsvis) 
+getMetData("11","","2011-01-01","2011-07-01","18700","tan","","","")
+Gir datadekning for element 'tan' hver måned i tidsintervallet. I output viser 'from' første i hver måned. 
+
+14 = 10 minutts observasjoner (hovedsaklig nedbør RR_010)
+getMetData("15","","2014-02-01","2014-02-03","4460","ta","12","","")
+Gir observasjoner for timen 12 UTC i gitt periode.I output for tidsangivelse, betyr Z UTC-tid. 
+
+15 = 10 min data fra et utvalg av oljeplattformene på Norsk Kontinentalsokkel 
+getMetData("15","","2008-09-01","2008-09-02","76920","ta","12","","")
+Gir data for timen 12 UTC i gitt periode.I output for tidsangivelse, betyr Z UTC-tid. 
+
+# Definition
+
 + Parameters
 
     + sources (list, optional) ... A list of data source IDs that the result should be limited to. If no data sources are specified, all data sources are returned. Sources can also be specified as wildcard/regex strings.
