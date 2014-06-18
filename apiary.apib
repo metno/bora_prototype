@@ -77,7 +77,7 @@ of data about observations, both individual data measurements as well as time-se
 - version (integer)  : Version of the data value.
 
 
-## /observations.json{?sources,places,level,reftime,validtime,params,quality,versions,functions,fields,limit,offset,namespace,querytime}
+## /observations.json{?sources,places,level,reftime,validtime,parameters,quality,versions,functions,fields,limit,offset,namespace,querytime}
 ### GET
 
 Retrieve observation data from the API in JSON format. Identical queries can be asked in the API using .csv or .bufr instead of .json.
@@ -89,11 +89,11 @@ One possible function could be timeseries; this would crunch the value, quality,
 
 + Parameters
 
-    + sources (list, optional) ... A list of data source IDs that the result should be limited to. If no data sources are specified, all datasources are returned.
+    + sources (list, optional) ... A list of data source IDs that the result should be limited to. If no data sources are specified, all data sources are returned. Sources can also be specified as wildcard/regex strings.
     + places (list, optional) ... A list of locations. EWKT (WKT ISO-13249-3:2011 in 3D with spatial reference information and level parameter).
     + reftime (time, optional) ... The referencetime of data required. ISO-8601.
     + validtime (time, optional) ... The validtime of data required. ISO-8601.
-    + params (list, optional) ... The value parameters of the data required. New MET parameter standard.
+    + parameters (list, optional) ... The value parameters of the data required. New MET parameter standard. Value parameters can be specified as wildcard/regex strings.
     + quality (code, optional) ... The lowest quality of the data value accepted. MET quality code standard.
     + versions (code, optional) ... The version of the data value (not the same as EPS dataVersion).
     + functions (list, optional) ... Functions to be run over the result, including on-the-fly aggregateion, etc.
@@ -111,7 +111,7 @@ One possible function could be timeseries; this would crunch the value, quality,
                 "place": "POINT(55.4 12.3 2);srid=WGS84;altitude",
                 "reftime": "2012-03-01T00:00:00Z",
                 "validtime": "2012-03-01T00:00:00Z",
-                "param": "air_temperature",
+                "parameter": "air_temperature",
                 "value": 0.9,
                 "quality": 2,
                 "version": 2,
@@ -122,7 +122,7 @@ One possible function could be timeseries; this would crunch the value, quality,
                 "place": "POINT(55.4 12.3 2);srid=WGS84;altitude",
                 "reftime": "2012-03-02T00:00:00Z",
                 "validtime": "2012-03-02T00:00:00Z",
-                "param": "air_temperature",
+                "parameter": "air_temperature",
                 "value": 1.1,
                 "quality": 2,
                 "version": 3,
@@ -133,7 +133,7 @@ One possible function could be timeseries; this would crunch the value, quality,
                 "place": "POINT(55.4 12.3 2);srid=WGS84;altitude",
                 "reftime": "2012-03-03T00:00:00Z",
                 "validtime": "2012-03-03T00:00:00Z",
-                "param": "air_temperature",
+                "parameter": "air_temperature",
                 "value": 4.5,
                 "quality": 1,
                 "version": 1,
@@ -158,7 +158,7 @@ If an observation record already exists for this data, then a 403-forbidden is r
                 "place": "POINT(55.4 12.3 2);srid=WGS84;altitude",
                 "reftime": "2012-03-01T00:00:00Z",
                 "validtime": "2012-03-01T00:00:00Z",
-                "param": "air_temperature",
+                "parameter": "air_temperature",
                 "value": 4.5,
                 "quality": 1,
                 "version": 1
@@ -171,7 +171,7 @@ If an observation record already exists for this data, then a 403-forbidden is r
                 "place": "POINT(55.4 12.3 2);srid=WGS84;altitude",
                 "reftime": "2012-03-01T00:00:00Z",
                 "validtime": "2012-03-01T00:00:00Z",
-                "param": "air_temperature",
+                "parameter": "air_temperature",
                 "value": 4.5,
                 "quality": 1,
                 "version": 2,
@@ -191,7 +191,7 @@ Returns an error if the observation does not exist from before. Returns an error
                 "place": "POINT(55.4 12.3 2);srid=WGS84;altitude",
                 "reftime": "2012-03-01T00:00:00Z",
                 "validtime": "2012-03-01T00:00:00Z",
-                "param": "air_temperature",
+                "parameter": "air_temperature",
                 "value": 4.5,
                 "quality": 1
             }
@@ -203,7 +203,7 @@ Returns an error if the observation does not exist from before. Returns an error
                 "place": "POINT(55.4 12.3 2);srid=WGS84;altitude",
                 "reftime": "2012-03-01T00:00:00Z",
                 "validtime": "2012-03-01T00:00:00Z",
-                "param": "air_temperature",
+                "parameter": "air_temperature",
                 "value": 4.5,
                 "quality": 1,
                 "version": 2,
@@ -212,7 +212,7 @@ Returns an error if the observation does not exist from before. Returns an error
 
 ### DELETE
 
-This will always result in a 403-forbidden error, since data is never deleted through the API in the current design.
+This will always result in a 403-forbidden error, since data is never deleted through the API in the current architecture.
 
 + Response 403
 
@@ -221,13 +221,16 @@ This will always result in a 403-forbidden error, since data is never deleted th
 
 Source is a key entity in the MET data model. Source designates the known entity in the system which is closest to the creation of the data and can represent several different kinds of data such as stations, algorithms (models), etc.
 
-## /sources.json{?sources,validtime,fields,limit,offset,namespace}
+As such, the Source resource can be used to access metadata about any of the varying types of data sources that exist at MET.
+
+## /sources.json{?sources,types,validtime,fields,limit,offset,namespace}
 ### GET
 
 + Response 200
 
 + Parameters
-    + sources (list, optional) ... A list of source IDs that the result should be limited to. If no data providers are specified, all dataProviders are returned.
+    + sources (list, optional) ... A list of source IDs that the result should be limited to. If no sources are specified, all sources are returned.
+    + types (list, optional) ... A list of source types that the result should be limited to. 
     + validtime (list, optional) ... The validtime of data required. ISO-8601.
     + fields (list, optional) ... Limit the data returned in the return format to only these variables or fields.
     + limit (integer, optional) ... Limit the number of answers. Default (and maximum) depends on user.
