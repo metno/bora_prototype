@@ -151,16 +151,49 @@ cities, etc).
 
 ### Time Specification
 
-Our time specification is based on ISO-8601, extended with a couple of features in 
+Our time specification is based on ISO-8601, extended with repeating intervals which do not exist in the ISO standard. 
 
 + Date: YYYY-MM-DD
 + Time: hh:mm:ss
-+ Date Time: <date>T<time>
++ Date Time: \<date\>T\<time\>
 + Duration: PnYnMnDTnHnMnS
-+ Time Interval: <start>/<end>
-+ Time Interval: <start>/<duration>
-+ Repeating Time Points: R[n]/<interval>
-+ Repeating Intervals: R[n]/<interval>/Duration
++ Time Interval: \<start\>/\<end\>
++ Time Interval: \<start\>/\<duration\>
++ Repeating Time Points: R[n]/\<interval\>
++ Repeating Intervals: R[n]/\<interval\>/Duration
+
+It is important to note that intervals follow inclusive/exclusive semantics; i.e., [0,1) representing a value that
+is equal to or greater than 0, and less than 1.
+
+Repeating time points are repeated immediately after each other. So, for example:
+
+> R4/2005-07-01T00:00/2005-07-01T06:00
+
+Represents the four consecutive time intervals:
+
+> 2005-07-01T00:00/2005-07-01T06:00
+
+> 2005-07-01T06:00/2005-07-01T12:00
+
+> 2005-07-01T12:00/2005-07-01T18:00
+
+> 2005-07-01T18:00/2005-07-02T00:00
+
+
+For repeating intervals, we add a duration that represents the time between the start points of the interval. So for example:
+
+> R4/2005-07-01T00:00/2005-07-01T06:00/P1D
+
+Represents the four time intervals:
+
+> 2005-07-01T00:00/2005-07-01T06:00
+
+> 2005-07-02T00:00/2005-07-02T06:00
+
+> 2005-07-03T00:00/2005-07-03T06:00
+
+> 2005-07-04T00:00/2005-07-04T06:00
+
 
 ### Parameters
 
